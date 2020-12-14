@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>RLinker 테스트입니다.</div>
+<div><button id="button1" onclick="button1_click();">run r script</button></div>
+<div><button id="button2" onclick="button2_click();">read csv file</button></div>
+
+<div id="main" style="width:600px; height:400px;"></div>
+
+</body>
+</html>
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.0.0/dist/echarts.min.js"></script>
+<script>
+    function button1_click() {
+        $.ajax({
+            // url:'http://localhost:8080/rscriptexec',
+            url:'http://192.168.0.88:8080/rscriptexec',
+            type:'POST',
+            dataType:'text', // 리턴해주는 타입을 지정해줘야함
+            success: function(data) {
+                console.log(data)
+            }
+        });
+    }
+    function button2_click() {
+        $.ajax({
+            // url:'http://localhost:8080/rlinker',
+            url:'http://192.168.0.88:8080/rlinker',
+            type:'POST',
+            // data: {
+            //     Name:'ajax',
+            // },
+            dataType:'text', // 리턴해주는 타입을 지정해줘야함
+            success: function(data) {
+                draw_graph(data);
+            },
+        });
+
+    }
+    function draw_graph(data){
+        var jObj = JSON.parse(data);
+
+        console.log(jObj)
+        console.log(jObj.year)
+        console.log(jObj.gdp)
+
+        var myChart = echarts.init(document.getElementById('main'));
+        var option = {
+            xAxis: {
+                type: 'category',
+                data: jObj.year
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: jObj.gdp,
+                type: 'line'
+            }]
+        };
+
+
+
+        // use configuration item and data specified to show chart
+        myChart.setOption(option);
+
+    }
+
+    $( document ).ready(function() {
+        console.log("run R linker")
+
+    });
+</script>
